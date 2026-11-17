@@ -161,7 +161,7 @@ export function Settings() {
         </dl>
       </section>
 
-      <p className="muted center">Simple IPTV Player v{version}</p>
+      <p className="muted center">Marquee v{version}</p>
     </div>
   );
 }

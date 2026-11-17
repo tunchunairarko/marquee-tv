@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    simple_iptv_player_lib::run()
+    marquee_lib::run()
 }

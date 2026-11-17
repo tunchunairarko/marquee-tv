@@ -225,7 +225,7 @@ export const useApp = create<State>()(
       },
     }),
     {
-      name: "simple-iptv",
+      name: "marquee",
       version: 1,
       partialize: (s) => ({
         sources: s.sources,

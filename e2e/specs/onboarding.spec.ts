@@ -2,7 +2,7 @@ import { expect, loginXtream, MOCK, test } from "../support/fixtures";
 
 test("shows the sign-in screen on first launch", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Simple IPTV" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Marquee" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Xtream Codes" })).toBeVisible();
   await expect(page.getByRole("button", { name: "M3U playlist" })).toBeVisible();
 });

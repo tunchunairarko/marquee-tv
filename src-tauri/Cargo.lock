@@ -2274,6 +2274,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "marquee"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "futures-util",
+ "log",
+ "percent-encoding",
+ "rand",
+ "reqwest",
+ "rustls",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-window-state",
+ "tokio",
+ "url",
+]
+
+[[package]]
 name = "matchit"
 version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3699,28 +3721,6 @@ name = "simdutf8"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3a9fe34e3e7a50316060351f37187a3f546bce95496156754b601a5fa71b76e"
-
-[[package]]
-name = "simple-iptv-player"
-version = "0.1.0"
-dependencies = [
- "axum",
- "futures-util",
- "log",
- "percent-encoding",
- "rand",
- "reqwest",
- "rustls",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
- "tauri-plugin-single-instance",
- "tauri-plugin-window-state",
- "tokio",
- "url",
-]
 
 [[package]]
 name = "siphasher"

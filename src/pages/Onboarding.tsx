@@ -16,7 +16,7 @@ export function Onboarding() {
         <div className="onboarding__brand">
           <img src="/logo.svg" alt="" />
           <div>
-            <h1>Simple IPTV</h1>
+            <h1>Marquee</h1>
             <p className="muted">Fast, beautiful live TV, films and series.</p>
           </div>
         </div>

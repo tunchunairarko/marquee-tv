@@ -1,4 +1,4 @@
-# Simple IPTV Player
+# Marquee
 
 A fast, minimal desktop IPTV player with a Netflix / BBC iPlayer-style interface. Built with **Tauri 2**, **React 19** and a small **Rust streaming proxy**.
 
@@ -80,7 +80,7 @@ The version is taken from the tag (`scripts/set-version.mjs`), so you never edit
 
 ### Optional: code signing
 
-Builds are unsigned by default. On macOS, run `xattr -cr "/Applications/Simple IPTV Player.app"` after installing. To sign, add these repository secrets and pass them as `env` to the `tauri-action` step: `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID` (macOS), or a Windows certificate (see the [Tauri signing docs](https://v2.tauri.app/distribute/sign/)).
+Builds are unsigned by default. On macOS, run `xattr -cr "/Applications/Marquee.app"` after installing. To sign, add these repository secrets and pass them as `env` to the `tauri-action` step: `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID` (macOS), or a Windows certificate (see the [Tauri signing docs](https://v2.tauri.app/distribute/sign/)).
 
 ## Keyboard shortcuts
 
