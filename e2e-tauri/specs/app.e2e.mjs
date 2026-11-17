@@ -33,10 +33,10 @@ async function closePlayer() {
   await $(".player").waitForExist({ reverse: true });
 }
 
-describe("Simple IPTV desktop app", () => {
+describe("Marquee desktop app", () => {
   it("launches on the sign-in screen", async () => {
-    await expect($(".onboarding__brand h1")).toHaveText("Simple IPTV");
-    expect(await browser.getTitle()).toBe("Simple IPTV Player");
+    await expect($(".onboarding__brand h1")).toHaveText("Marquee");
+    expect(await browser.getTitle()).toBe("Marquee");
   });
 
   it("rejects wrong credentials", async () => {

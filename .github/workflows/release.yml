@@ -62,7 +62,7 @@ jobs:
             const { data } = await github.rest.repos.createRelease({
               owner, repo,
               tag_name: tag,
-              name: `Simple IPTV Player ${tag}`,
+              name: `Marquee ${tag}`,
               draft: true,
               prerelease,
               generate_release_notes: true,

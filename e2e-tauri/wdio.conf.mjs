@@ -11,9 +11,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const exe = process.platform === "win32" ? "simple-iptv-player.exe" : "simple-iptv-player";
+const exe = process.platform === "win32" ? "marquee.exe" : "marquee";
 const application = path.join(root, "src-tauri", "target", "debug", exe);
-const IDENTIFIER = "io.github.tunchunairarko.simpleiptv";
+const IDENTIFIER = "io.github.tunchunairarko.marquee";
 const MOCK = "http://127.0.0.1:4599";
 
 let driver;

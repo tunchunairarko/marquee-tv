@@ -51,7 +51,7 @@ export function TopNav() {
     <nav className={cx("topnav", (solid || view.name === "live" || view.name === "settings") && "is-solid")}>
       <div className="topnav__brand" onClick={() => navigate({ name: "home" })}>
         <img src="/logo.svg" alt="" />
-        <span>Simple IPTV</span>
+        <span>Marquee</span>
       </div>
       <ul className="topnav__links">
         {LINKS.map((l) => (

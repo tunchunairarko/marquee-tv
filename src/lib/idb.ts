@@ -1,5 +1,5 @@
 // Minimal promise wrapper around IndexedDB used as a catalog cache.
-const DB_NAME = "simple-iptv";
+const DB_NAME = "marquee";
 const STORE = "kv";
 
 let dbPromise: Promise<IDBDatabase> | null = null;

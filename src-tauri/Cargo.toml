@@ -1,5 +1,5 @@
 [package]
-name = "simple-iptv-player"
+name = "marquee"
 version = "0.1.0"
 description = "A fast, minimal desktop IPTV player"
 authors = ["tunchunairarko"]
@@ -8,7 +8,7 @@ edition = "2021"
 rust-version = "1.85"
 
 [lib]
-name = "simple_iptv_player_lib"
+name = "marquee_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
