@@ -27,7 +27,7 @@ reqwest = { version = "0.13", default-features = false, features = ["rustls-no-p
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12", "logging"] }
 futures-util = "0.3"
 url = "2"
-rand = "0.9"
+rand = "0.10"
 percent-encoding = "2"
 log = "0.4"
 
