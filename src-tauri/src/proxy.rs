@@ -34,6 +34,17 @@ pub const DEFAULT_USER_AGENT: &str = "VLC/3.0.21 LibVLC/3.0.21";
 /// Upper bound for buffering something that looks like an HLS playlist.
 const MAX_PLAYLIST_BYTES: u64 = 8 * 1024 * 1024;
 
+/// How long an upstream may go silent (no headers / no body bytes) before we
+/// give up. Every proxied request shares one origin, and WebKit allows only 6
+/// connections per origin, so a request that hangs forever would eventually
+/// block all playback. Only counts time spent waiting on the upstream, so a
+/// paused player that stops reading is not affected.
+const READ_TIMEOUT: Duration = if cfg!(test) {
+    Duration::from_secs(1)
+} else {
+    Duration::from_secs(30)
+};
+
 pub struct ProxyInner {
     pub client: reqwest::Client,
     pub token: String,
@@ -59,6 +70,7 @@ pub fn build_client() -> reqwest::Client {
     let _ = rustls::crypto::ring::default_provider().install_default();
     reqwest::Client::builder()
         .connect_timeout(Duration::from_secs(12))
+        .read_timeout(READ_TIMEOUT)
         .pool_idle_timeout(Duration::from_secs(60))
         .pool_max_idle_per_host(16)
         .tcp_nodelay(true)
@@ -376,6 +388,57 @@ mod tests {
             let addr = l.local_addr().unwrap();
             tokio::spawn(async move { axum::serve(l, app).await.unwrap() });
             format!("http://{addr}")
+        }
+
+        /// An upstream that accepts the connection and then goes silent must not
+        /// pin a proxy connection forever (it would eat one of WebKit's 6 slots).
+        #[tokio::test]
+        async fn silent_upstream_times_out() {
+            use tokio::io::{AsyncReadExt, AsyncWriteExt};
+            let l = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let up = format!("http://{}", l.local_addr().unwrap());
+            tokio::spawn(async move {
+                loop {
+                    let (mut s, _) = l.accept().await.unwrap();
+                    tokio::spawn(async move {
+                        let mut buf = [0u8; 4096];
+                        let n = s.read(&mut buf).await.unwrap();
+                        if buf[..n].starts_with(b"GET /stall") {
+                            // headers + a few bytes, then nothing
+                            let _ = s
+                                .write_all(
+                                    b"HTTP/1.1 200 OK\r\nContent-Type: video/mp2t\r\n\r\nabc",
+                                )
+                                .await;
+                        }
+                        tokio::time::sleep(Duration::from_secs(3600)).await;
+                        drop(s);
+                    });
+                }
+            });
+            let proxy = start().await.unwrap();
+            let c = reqwest::Client::new();
+            let limit = READ_TIMEOUT * 5;
+
+            // no response headers at all
+            let res =
+                tokio::time::timeout(limit, c.get(proxy.proxied(&format!("{up}/hang"))).send())
+                    .await
+                    .expect("proxy hung on a silent upstream")
+                    .unwrap();
+            assert_eq!(res.status(), 502);
+
+            // body starts, then stalls
+            let res = c
+                .get(proxy.proxied(&format!("{up}/stall")))
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(res.status(), 200);
+            let body = tokio::time::timeout(limit, res.bytes())
+                .await
+                .expect("proxy hung on a stalled body");
+            assert!(body.is_err(), "stalled body should end with an error");
         }
 
         #[tokio::test]
