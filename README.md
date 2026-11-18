@@ -82,7 +82,13 @@ The version is taken from the tag (`scripts/set-version.mjs`), so you never edit
 
 ### Optional: code signing
 
-Builds are unsigned by default. On macOS, run `xattr -cr "/Applications/Marquee.app"` after installing. To sign, add these repository secrets and pass them as `env` to the `tauri-action` step: `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID` (macOS), or a Windows certificate (see the [Tauri signing docs](https://v2.tauri.app/distribute/sign/)).
+Builds are not signed with a paid certificate, so each OS warns on first launch:
+
+- **macOS:** builds are ad-hoc signed, so macOS says it can't verify the developer instead of calling the app damaged. Open it once, then go to System Settings → Privacy & Security → **Open Anyway** (or run `xattr -cr "/Applications/Marquee.app"`).
+- **Windows:** on *"Windows protected your PC"*, click **More info → Run anyway**.
+- **Linux:** no warning; for the AppImage, `chmod +x` it first.
+
+To sign properly, add these repository secrets and pass them as `env` to the `tauri-action` step: `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD`, `APPLE_SIGNING_IDENTITY`, `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID` (macOS), or a Windows certificate (see the [Tauri signing docs](https://v2.tauri.app/distribute/sign/)).
 
 ## Keyboard shortcuts
 
