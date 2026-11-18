@@ -70,65 +70,12 @@ jobs:
             return String(data.id);
 
   build:
-    name: Build · ${{ matrix.name }}
     needs: create-release
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: macOS (Apple Silicon)
-            os: macos-latest
-            target: aarch64-apple-darwin
-            args: --target aarch64-apple-darwin
-          - name: macOS (Intel)
-            os: macos-latest
-            target: x86_64-apple-darwin
-            args: --target x86_64-apple-darwin
-          - name: Linux x64
-            os: ubuntu-22.04
-            target: ""
-            args: ""
-          - name: Linux arm64
-            os: ubuntu-22.04-arm
-            target: ""
-            args: ""
-          - name: Windows x64
-            os: windows-latest
-            target: ""
-            args: ""
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ env.TAG }}
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file \
-            libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf xdg-utils
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: pnpm
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
-          key: ${{ matrix.target }}
-      - run: pnpm install --frozen-lockfile
-      - name: Set version from tag
-        shell: bash
-        run: node scripts/set-version.mjs "$TAG"
-      - uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
-          args: ${{ matrix.args }}
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: ${{ github.event.inputs.tag || github.ref_name }}
+      version: ${{ github.event.inputs.tag || github.ref_name }}
+      release_id: ${{ needs.create-release.outputs.release_id }}
 
   publish:
     name: Publish release
