@@ -167,10 +167,14 @@ export class Playback {
     this.video.addEventListener("error", this.nativeErr);
     this.video.src = src;
     if (this.startAt > 0) this.video.currentTime = this.startAt;
-    this.play();
+    // Play once metadata is in: WebKitGTK can drop a play() issued right after setting src
+    // (films never started there once the <video> autoplay attribute was removed).
+    const gen = this.gen;
     this.video.addEventListener(
       "loadedmetadata",
       () => {
+        if (this.destroyed || gen !== this.gen) return;
+        this.play();
         const subs = Array.from(this.video.textTracks).map((t, i) => ({ id: i, label: t.label || t.language || `Track ${i + 1}` }));
         this.setTracks({ ...EMPTY, subs });
       },
