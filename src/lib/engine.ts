@@ -49,6 +49,21 @@ function kindOf(url: string): Kind {
   return "mpegts";
 }
 
+const LIVE_POLL = 0.25; // s between buffer checks while holding a live start
+const LIVE_MAX_WAIT = 3; // s after the first data before starting anyway
+const LIVE_LAG = 3; // s behind the buffered edge to start (headroom for bursty delivery)
+
+/**
+ * Where to start a live stream, or undefined to keep waiting. Waits while the buffer
+ * grows much faster than real time (the provider's connect-time backlog burst).
+ */
+export function liveStart(prevEnd: number, end: number, start: number, waited: number): number | undefined {
+  if (end <= 0) return undefined;
+  const bursting = prevEnd <= 0 || end - prevEnd > LIVE_POLL * 1.5;
+  if (bursting && waited < LIVE_MAX_WAIT) return undefined;
+  return Math.max(start, end - LIVE_LAG);
+}
+
 const EMPTY: EngineTracks = { qualities: [], quality: -1, audios: [], audio: -1, subs: [], sub: -1 };
 
 /**
@@ -186,7 +201,7 @@ export class Playback {
           if (this.ts !== player) return;
           player.unload();
           player.load();
-          this.play();
+          this.startAtLiveEdge(player);
         }, 800);
         return;
       }
@@ -194,8 +209,35 @@ export class Playback {
     });
     player.attachMediaElement(this.video);
     player.load();
+    if (this.live) return this.startAtLiveEdge(player);
     if (this.startAt > 0) this.video.currentTime = this.startAt;
     this.play();
+  }
+
+  /**
+   * Many providers burst 20-30 s of backlog the moment a live TS stream connects.
+   * Playing right away starts at the oldest frame, and the latency chaser then seeks
+   * forward several times while the burst lands, which looks like a fast-forward.
+   * Stay paused until the burst is in, then start once near the live edge.
+   */
+  private startAtLiveEdge(player: MpegtsType.Player) {
+    let prevEnd = 0;
+    let waited = 0;
+    const tick = () => {
+      if (this.ts !== player || this.destroyed) return;
+      const b = this.video.buffered;
+      const end = b.length ? b.end(b.length - 1) : 0;
+      const at = liveStart(prevEnd, end, b.length ? b.start(0) : 0, waited);
+      if (at === undefined) {
+        if (end > 0) waited += LIVE_POLL;
+        prevEnd = end;
+        setTimeout(tick, LIVE_POLL * 1000);
+        return;
+      }
+      this.video.currentTime = at;
+      this.play();
+    };
+    setTimeout(tick, LIVE_POLL * 1000);
   }
 
   private startHls(Hls: typeof HlsType, src: string) {

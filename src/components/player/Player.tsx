@@ -335,7 +335,6 @@ function Player({ req }: { req: PlayRequest }) {
         ref={video}
         className="player__video"
         playsInline
-        autoPlay
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onWaiting={() => setWaiting(true)}
