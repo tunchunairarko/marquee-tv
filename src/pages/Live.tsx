@@ -216,7 +216,7 @@ function Preview({ channel, onWatch }: { channel: LiveChannel; onWatch(): void }
   return (
     <div className="preview" key={channel.id}>
       <div className="preview__screen" onDoubleClick={onWatch}>
-        <video ref={video} playsInline autoPlay onPlaying={() => setState("playing")} onWaiting={() => setState("loading")} />
+        <video ref={video} playsInline onPlaying={() => setState("playing")} onWaiting={() => setState("loading")} />
         {!livePreview && (
           <div className="preview__overlay">
             <Img src={channel.logo} className="preview__biglogo" />
